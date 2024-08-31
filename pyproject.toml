@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asymr"
+description = "Asynchronous Map/Reduce"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT License" }
+dynamic = ["version", "dependencies"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://github.com/Alesh/asymr"
+Issues = "https://github.com/Alesh/asymr/issues"
+
+[tool.setuptools.packages.find]
+include = ["asymr"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools_scm]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]

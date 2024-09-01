@@ -25,6 +25,7 @@ include = ["asymr"]
 dependencies = { file = ["requirements.txt"] }
 
 [tool.setuptools_scm]
+write_to = "asymr/__version__.py"
 
 [tool.pytest.ini_options]
 testpaths = [

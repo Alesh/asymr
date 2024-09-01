@@ -1,2 +1,4 @@
 pytest
 pytest-asyncio
+async-timeout;python_version<"3.11"
+redis

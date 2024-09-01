@@ -68,3 +68,6 @@ docs/_build/
 
 # Pyenv
 .python-version
+
+#
+__version__.py

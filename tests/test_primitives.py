@@ -15,12 +15,12 @@ from asymr.primitives import Source, Destination
 @pytest.mark.asyncio
 async def test_source_destination_destination():
     class FirstSource(Source[list[int]]):
-        def __init__(self):
+        def __init__(self, *args, **kwargs):
             async def source_iterator():
                 for i in range(10):
                     yield [i]
 
-            super().__init__(source_iterator())
+            super().__init__(source_iterator(), *args, **kwargs)
 
     class FirstDestination(Destination[list[int]]):
         async def __anext__(self):
@@ -34,7 +34,8 @@ async def test_source_destination_destination():
                 raise StopAsyncIteration
             return [first, second, first * second]
 
-    destination = FirstSource() >> FirstDestination() >> SecondDestination()
+    destination = FirstSource("one") >> FirstDestination("two") >> SecondDestination("three")
+    assert destination.name == 'one:two:three'
     result = [item async for item in destination]
     assert result == [[0, 0, 0], [1, 1, 1], [2, 4, 8], [3, 9, 27], [4, 16, 64]]
 

@@ -133,11 +133,12 @@ class Link(AsyncIterator[D]):
             self._queue.task_done()
 
 
-class Source(Link[D]):
+class Source(Link[D], Named):
     """ Data source """
 
-    def __init__(self, source: AsyncIterator[D]):
-        super().__init__(source)
+    def __init__(self, source: AsyncIterator[D], name: str = None):
+        Link.__init__(self, source)
+        Named.__init__(self, name)
 
     @property
     def source(self):
@@ -148,8 +149,9 @@ class Source(Link[D]):
         raise AttributeError("can't set attribute 'source'")
 
 
-class Destination(Link[D]):
+class Destination(Link[D], Suffixed):
     """ Data destination """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, suffix: str = None):
+        Link.__init__(self)
+        Suffixed.__init__(self, suffix)

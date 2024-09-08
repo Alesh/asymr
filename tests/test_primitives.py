@@ -31,7 +31,7 @@ async def test_source_destination_destination():
         async def __anext__(self):
             first, second = await super().__anext__()
             if first == 5:
-                raise StopAsyncIteration
+                raise StopAsyncIteration # Note: Exception here will not close the destination
             return [first, second, first * second]
 
     destination = FirstSource("one") >> FirstDestination("two") >> SecondDestination("three")

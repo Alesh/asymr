@@ -136,8 +136,10 @@ class Link(AsyncIterator[D]):
 class Source(Link[D], Named):
     """ Data source """
 
-    def __init__(self, source: AsyncIterator[D], name: str = None):
-        Link.__init__(self, source)
+    def __init__(self, source_it: AsyncIterator[D], name: str = None):
+        if not isinstance(source_it, AsyncIterator):
+            raise TypeError("First parameter must be an async iterator")
+        Link.__init__(self, source_it)
         Named.__init__(self, name)
 
     @property
@@ -155,3 +157,28 @@ class Destination(Link[D], Suffixed):
     def __init__(self, suffix: str = None):
         Link.__init__(self)
         Suffixed.__init__(self, suffix)
+
+
+class Transform(Destination[D]):
+    """ Data transformator """
+
+    def __init__(self, transform_it: t.Callable[[AsyncIterator[D]], AsyncIterator[D]], suffix: str = None):
+        Destination.__init__(self, suffix)
+
+        async def transform_task():
+            if self.source:
+                aiter_ = transform_it(self.source)
+                try:
+                    if not isinstance(aiter_, AsyncIterator):
+                        raise TypeError("First parameter must be an async iterator")
+                    async for item in aiter_:
+                        await self._queue.put(item)
+                except asyncio.CancelledError:
+                    await self._queue.put(None)
+                except Exception as exc:
+                    await self._queue.put(exc)
+                finally:
+                    self.source.close()
+
+        self._source_tack.cancel()
+        self._source_tack = asyncio.create_task(transform_task())
